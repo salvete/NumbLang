@@ -1,0 +1,64 @@
+let five = 5;
+
+// 使得ten为10
+let ten = 10;
+
+let var = 12.34230;
+
+/**
+*在这里定义了一个函数
+*/
+
+/*
+* add :函数名
+*/
+let add = fn(x,y){
+  x + y;
+};
+
+let result = add(five,ten);
+
+/**
+ffdafdafdafda ******************8
+**********
+*
+
+fdafdafdafda
+****/
+
+5 < 10 > 5;
+
+if (5 < 10)
+{
+  return true;
+}
+else
+{
+  return false;
+}
+
+10 == 10;
+
+~6 = 19;
+
+10 != 9;
+
+true || false;
+
+true && true;
+
+true
+
+
+fdafdafdafda
+fdafdafdafdafda
+
+
+fdafdafdafda
+
+
+
+
+
+
+

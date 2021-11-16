@@ -1,0 +1,15 @@
+let a = b;
+let c = d;
+1 + 2 + 3;
+// fdafdafa
+1 + (2 * 8);
+let x = 5;let y = 10;
+let anothername = barfoo;
+let x = 5;
+/*
+    将y赋值10
+*/
+let y = 10;
+let foobar = 83232;
+let x = 1.24342;
+let y = ~(x + 100 + y * 2);
