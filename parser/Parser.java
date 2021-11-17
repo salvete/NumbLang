@@ -10,6 +10,7 @@ import ast.FunctionStatement;
 import ast.IdentifierStatement;
 import ast.IfStatement;
 import ast.LetStatement;
+import ast.ReturnStatement;
 import ast.interfaces.Statement;
 import lexer.Lexer;
 import token.Token;
@@ -40,42 +41,44 @@ public class Parser {
 
 
     /**
-    *The grammer of NumLang:
-    *
-    *program ::= <program-block>
-    *program-block ::= <block>
-    *block ::= {sigle-statement}*
-    *sigle-statement =[ [<let-statementn> | <callFunction-Statement> | 
-    *  <function-definition>(和callFunction有冲突) | <expression-statement> | <identifier> ';' (和callFunction可能有冲突)]
-    *  | [<if-statment>]] 
-    *
-    * Let Statement
-    *let-Statement ::= 'let' <identifier> '=' [callFunctio-Statement | function-definition | expression-statement | identifier]
-    *
-    * Function Invacation:
-    *callFunction-Statement ::= [<identifier> | <function-definition> ] '('<parameters>')'
-    *parameters ::= {<expresson-statement> | callFunction}*
-    *
-    * If-else Statement:
-    *if-statement ::= 'if' '{' <program-block> '}'  'else' '{' <program-block> '}'
-    *
-    * Function Definition Statement:
-    *function-definition ::= 'fn' '(' <arguments> ')' '{' <function-body> '}' 
-    *<arguments> ::= [<identifier> | expression-statament | callFunction-statement] {',' [<identifier> | expression-statament | callFunction-statement] }*
-    *<function-body> ::= <program-block>
-    *
-    * Expression Statement:
-    *<expression-statement> ::= <compare> '==' <expression-statement> | <compare>  '!=' <expression-statement> | <compare>
-    *<compare> ::=  <arithmetic> '>' <compare> | <arithmetic> '<' <compare> | <arithmetic> 
-    *<arithmetic> ::= <priority-arithmetic> '+' <arithmetic> | <priority-arithmetic> '-' <arithmetic> | <priority-arithmetic> 
-    *<priority-arithmetic> ::= <number> '*' <priority-arithmetic> | <number> '/' <priority-arithmetic> | <number>
-    *<number> ::= {~}[<integer> | <float> | (<expression-statement>)] | identifier | callfunction-statement
-    *
-    * Number or Identifier:
-    *<unsigned integer> ::= <digit> | <unsigned integer> <digit>
-    *<integer> ::= +<unsigned integer>  | ~<unsigned integer> | <unsigned integer>
-    *<identifier> ::= <letter> | <idenfitier> < digit> | <identifier> <letter>
-    *<float> := <digit>'.'<digit> 
+    * The grammer of NumLang:
+    * 
+    * program ::= <program-block>
+    * program-block ::= <block>
+    * block ::= {sigle-statement}*
+    * sigle-statement =[ [<let-statementn> | <callFunction-Statement> | 
+    *   <function-definition>(和callFunction有冲突) | <expression-statement> | <return-statement> | <identifier> ';' (和callFunction可能有冲突)]
+    *   | [<if-statment>]] 
+    * 
+    *  Let Statement
+    * let-Statement ::= 'let' <identifier> '=' [callFunctio-Statement | function-definition | expression-statement | identifier]
+    * 
+    *  Function Invacation:
+    * callFunction-Statement ::= [<identifier> | <function-definition> ] '('<parameters>')'
+    * parameters ::= {<expresson-statement> | callFunction}*
+    * 
+    *  If-else Statement:
+    * if-statement ::= 'if' '{' <program-block> '}'  'else' '{' <program-block> '}'
+    * 
+    *  Function Definition Statement:
+    * function-definition ::= 'fn' '(' <arguments> ')' '{' <function-body> '}' 
+    * <arguments> ::= [<identifier> | expression-statament | callFunction-statement] {',' [<identifier> | expression-statament | callFunction-statement] }*
+    * <function-body> ::= <program-block>
+    * 
+    *  Return Statement:
+    * <return-statment> := 'return' [function]
+    *  Expression Statement:
+    * <expression-statement> ::= <compare> '==' <expression-statement> | <compare>  '!=' <expression-statement> | <compare>
+    * <compare> ::=  <arithmetic> '>' <compare> | <arithmetic> '<' <compare> | <arithmetic> 
+    * <arithmetic> ::= <priority-arithmetic> '+' <arithmetic> | <priority-arithmetic> '-' <arithmetic> | <priority-arithmetic> 
+    * <priority-arithmetic> ::= <number> '*' <priority-arithmetic> | <number> '/' <priority-arithmetic> | <number>
+    * <number> ::= {~}[<integer> | <float> | true | false | (<expression-statement>)] | identifier | callfunction-statement
+    * 
+    *  Number or Identifier:
+    * <unsigned integer> ::= <digit> | <unsigned integer> <digit>
+    * <integer> ::= +<unsigned integer>  | ~<unsigned integer> | <unsigned integer>
+    * <identifier> ::= <letter> | <idenfitier> < digit> | <identifier> <letter>
+    * <float> := <digit>'.'<digit> 
     *
      @return Statement
     */
@@ -104,12 +107,10 @@ public class Parser {
                     s = null;
                 
             }
-            else if (checkType(curToken.type, TokenType.IDEN))
+            else if (checkType(curToken.type, TokenType.RETURN))
             {
-                Statement res = parseIdentifier();
+                s = parseReturnStatement();
 
-                s = res;
-                
                 if (!checkSemicolon())
                     s = null;
 
@@ -117,16 +118,6 @@ public class Parser {
             else if (checkType(curToken.type, TokenType.IF))
             {
                 s = parseIfStatement();
-            }
-            else if (checkType(curToken.type, TokenType.FUNCTION))
-            {
-               
-                Statement res = parseFunctionStatement();
-               
-                s = res;
-                
-                if (!checkSemicolon())
-                    s = null;
             }
             else
             {
@@ -147,6 +138,9 @@ public class Parser {
      */
     private Statement parseLetStatement()
     {
+        /**
+         * To make sure curToken is the keyword 'Let'.
+         */
         if (!checkType(curToken.type, TokenType.LET))
         {
             error(curToken.type, TokenType.LET, curToken.pos);
@@ -166,6 +160,9 @@ public class Parser {
             return null;
         }
 
+        /**
+         * let a = b, so the name is a.
+         */
         letStatement.name = new Token(curToken);
 
         nextToken();
@@ -183,27 +180,22 @@ public class Parser {
 
         switch(curToken.type)
         {
-            case TokenType.IDEN: value = parseIdentifier();break;
-            case TokenType.FUNCTION: value = parseFunctionStatement();break;
+            case TokenType.LET : value = parseLetStatement();break;
+            case TokenType.IF: value = parseIfStatement();break;
+            case TokenType.RETURN : value = parseReturnStatement();break;
             default: value = parseExpressionStatement(); 
         }
 
-        // To check the type of value
-        // let-Statement ::= 'let' <identifier> '=' [callFunctio-Statement | function-definition | expression-statement | identifier]
-        if (!(value instanceof CallStatement || value instanceof FunctionStatement ||
-            value instanceof ExpressionStatement || value instanceof IdentifierStatement))
-        {
-            error(value.getType(), "Function definition, Function invocation, expression or identifier", curToken.pos);
-            letStatement =null;
-            return null;
-        }
 
         letStatement.value = value;
 
         return letStatement;
     }
 
-
+    /**
+     * Parse identifier.
+     * @return
+     */
     private Statement parseIdentifier()
     {
         if (!checkType(curToken.type, TokenType.IDEN))
@@ -230,6 +222,10 @@ public class Parser {
         return res;
     }
 
+    /**
+     * Parse arguments like '(1,2,3,a,b,c)'.
+     * @return
+     */
     private LinkedList<Statement> parseArguments()
     {
         if (!checkType(curToken.type, TokenType.LPAREN))
@@ -244,7 +240,7 @@ public class Parser {
 
         while (!checkType(curToken.type, TokenType.RPAREN))
         {
-            Statement s = getNextStatement();
+            Statement s = parseExpressionStatement();
 
             if (!(s instanceof IdentifierStatement || s instanceof ExpressionStatement || s instanceof CallStatement))
             {
@@ -274,6 +270,19 @@ public class Parser {
         return res;
     }
 
+    /**
+     * Parse IfStatement like:
+     * if (a > b)
+     * {
+     *   ......
+     * }
+     * else
+     * {
+     *  .......
+     * }
+     * 
+     * @return
+     */
     private Statement parseIfStatement()
     {
         if (!checkType(curToken.type, TokenType.IF))
@@ -301,6 +310,7 @@ public class Parser {
 
         if (checkType(curToken.type, TokenType.ELSE))
         {
+            nextToken();
             ifStatement.elseCondition = parseBlockStatement();
         }
         else
@@ -312,6 +322,15 @@ public class Parser {
 
     }
 
+    /**
+     * Parse BlockStatements like:
+     * {
+     *    let a = b;
+     *    let c = 5;
+     *    ......
+     * }
+     * @return
+     */
     private BlockStatement parseBlockStatement()
     {
         if (!checkType(curToken.type, TokenType.LBRACE))
@@ -338,10 +357,19 @@ public class Parser {
             return null;
         }
 
+        nextToken();
+
         return bls;
     }
 
-
+    /**
+     * Parse FunctionStatement like:
+     * fn(x,y)
+     * {
+     *    ......
+     * }
+     * @return
+     */
     private Statement parseFunctionStatement()
     {
         if (!checkType(curToken.type, TokenType.FUNCTION))
@@ -384,6 +412,29 @@ public class Parser {
     }
 
     /**
+     * Parse ReturnStatement like:
+     * return a + b * c;
+     * @return
+     */
+    private Statement parseReturnStatement()
+    {
+        if (!checkType(curToken.type, TokenType.RETURN))
+        {
+            error(curToken.type, TokenType.RETURN, curToken.pos);
+            return null;
+        }
+
+        ReturnStatement returnStatement = new ReturnStatement();
+        returnStatement.token = new Token(curToken);
+        nextToken();
+
+        returnStatement.returnValue = parseExpressionStatement();
+
+        return returnStatement;
+    }
+
+    /**
+     * Parse Expressions.
      * In the following patern:
      * A  := B A'
      * A' := == B A' | != BA' | null
@@ -402,6 +453,10 @@ public class Parser {
         return A();
     }
 
+    /**
+     * Top layer.
+     * @return
+     */
     private Statement A()
     {
         ExpressionStatement root = new ExpressionStatement();
@@ -413,6 +468,11 @@ public class Parser {
 
     }
 
+    /**
+     * Second top.
+     * @param root 
+     * @return
+     */
     private Statement A_1(ExpressionStatement root)
     {
         if (checkType(curToken.type, TokenType.EQU) || checkType(curToken.type, TokenType.NEQU))
@@ -510,65 +570,63 @@ public class Parser {
             return null;
     }
 
+
     private Statement E()
     {
         Statement res = null;
-        boolean posOrNeg = false;
 
         if (checkType(curToken.type, TokenType.OPPOSITE))
         {
-            posOrNeg = true;
+            ExpressionStatement ops = new ExpressionStatement();
+            ops.opr = new Token(curToken);
             nextToken();
+            ops.left = E();
+            ops.right = null;
+            res = ops;
         }
-
-        if (checkType(curToken.type, TokenType.NUMBER) || checkType(curToken.type, TokenType.FLOAT))
+        else 
         {
-            ExpressionStatement expressionStatement = new ExpressionStatement();
-            expressionStatement.opr = new Token(curToken);
-            nextToken();
-            expressionStatement.left = expressionStatement.right = null;
-            expressionStatement.isLeaf = true;
-            expressionStatement.posOrNeg = posOrNeg;
-            res = expressionStatement;
-        }
-        else if (checkType(curToken.type, TokenType.IDEN))
-        {
-            IdentifierStatement identifierStatement = new IdentifierStatement(curToken);
-            identifierStatement.posOrNeg = posOrNeg;
-            nextToken();
-            res = identifierStatement;
-
-            if (checkType(curToken.type, TokenType.LPAREN))
+            if (checkType(curToken.type, TokenType.NUMBER) || checkType(curToken.type, TokenType.FLOAT)||
+                checkType(curToken.type, TokenType.TRUE) || checkType(curToken.type, TokenType.FALSE))
             {
-                CallStatement callStatement = new CallStatement();
-
-                callStatement.function = identifierStatement;
-                callStatement.arguments = parseArguments();
-                callStatement.posOrNeg = posOrNeg;
-                res = callStatement;
+                ExpressionStatement expressionStatement = new ExpressionStatement();
+                expressionStatement.opr = new Token(curToken);
+                nextToken();
+                expressionStatement.left = expressionStatement.right = null;
+                expressionStatement.isLeaf = true;
+                res = expressionStatement;
             }
-        }
-        else if (checkType(curToken.type, TokenType.LPAREN))
-        {
-            nextToken();
-
-            res = A();
-
-            if (!checkType(curToken.type, TokenType.RPAREN))
+            else if (checkType(curToken.type, TokenType.IDEN))
             {
-                error(curToken.type, TokenType.RPAREN, curToken.pos);
-                res = null;
+                res = parseIdentifier();
             }
-            
-            nextToken();
+            else if (checkType(curToken.type, TokenType.FUNCTION))
+            {
+                res = parseFunctionStatement();
+            }
+            else if (checkType(curToken.type, TokenType.LPAREN))
+            {
+                nextToken();
+
+                res = A();
+
+                if (!checkType(curToken.type, TokenType.RPAREN))
+                {
+                    error(curToken.type, TokenType.RPAREN, curToken.pos);
+                    res = null;
+                }
+                
+                nextToken();
+            }
+            else
+                error(curToken.type, "Number, Identifier or '('", curToken.pos);
+
         }
-        else
-            error(curToken.type, "Number, Identifier or '('", curToken.pos);
+
+        
 
         return res;
     }
-
-
 
 
     /**

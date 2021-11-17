@@ -2,13 +2,13 @@ package ast;
 
 import ast.interfaces.Statement;
 import token.Token;
+import token.TokenType;
 
 // 表达式在AST中的表现形式
 public class ExpressionStatement implements Statement{
     public Token opr;
     public Statement left;
     public Statement right;
-    public boolean posOrNeg = false;
     public boolean isLeaf = false;
 
     @Override
@@ -26,6 +26,11 @@ public class ExpressionStatement implements Statement{
             sb.append(s + "Experssion\n");
             sb.append(s + "    value:\n");
             sb.append(s + "        " + opr.value + "\n");
+        }
+        else if (opr.type.equals(TokenType.OPPOSITE))
+        {
+            sb.append(s + "Oppsite\n");
+            sb.append(left.getString(s + "\t"));
         }
         else
         {

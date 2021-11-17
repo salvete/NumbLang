@@ -7,7 +7,6 @@ import token.Token;
 
 public class IdentifierStatement implements Statement {
     public Token name;
-    public boolean posOrNeg = false; 
 
     public  IdentifierStatement(Token t)
     {

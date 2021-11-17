@@ -1,15 +1,41 @@
-let a = b;
-let c = d;
-1 + 2 + 3;
-// fdafdafa
-1 + (2 * 8);
-let x = 5;let y = 10;
-let anothername = barfoo;
-let x = 5;
-/*
-    将y赋值10
-*/
-let y = 10;
-let foobar = 83232;
-let x = 1.24342;
-let y = ~(x + 100 + y * 2);
+//测试前缀
+~5;
+~true;
+~false;
+
+// 测试中缀操作
+5 + 5;
+5 - 5;
+5 * 5;
+5 / 5;
+
+//测试比较运算
+foo == bar;
+foo != bar;
+foo > bar;
+foo < bar;
+
+// 复合语句
+5*(5+5);
+((5+5)*5) * 5;
+
+//函数调用
+add(2,3);
+add(add(2,3),add(5,10));
+max(5,add(5,(5*5)));
+
+//标识符参与运算
+foo * bar / foobar;
+add(foo,bar);
+
+//let语句
+let add = fn(x,y){
+    return x + y;
+};
+
+let result = if (10 > 5){ return true;}else{false;};
+
+//函数
+fn(x,y){return x + y;}(5,5);
+(fn(x){return x;}(5) + 10) * 10;
+

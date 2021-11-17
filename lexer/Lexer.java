@@ -15,14 +15,14 @@ public class Lexer {
     // 当前字符内容
     public char ch;
 
-    private int line = 0;
+    private int line = 1;
     
     public Lexer(String in)
     {
         input = in;
         ch = 0;
         pos = readPos = 0;
-        line = 0;
+        line = 1;
         readChar();
     }
 
