@@ -304,9 +304,9 @@ public class Parser {
             return null;
         }
 
-        ifStatement.condiction = parseExpressionStatement();
+        ifStatement.condition = parseExpressionStatement();
 
-        ifStatement.ifCondiction = parseBlockStatement();
+        ifStatement.ifCondition = parseBlockStatement();
 
         if (checkType(curToken.type, TokenType.ELSE))
         {
@@ -437,7 +437,7 @@ public class Parser {
      * Parse Expressions.
      * In the following patern:
      * A  := B A'
-     * A' := == B A' | != BA' | null
+     * A' := == B A' | != BA' | && BA' | || BA' | null
      * B  := C B'
      * B' := > C B' | < C B' | null
      * C  := D C'
@@ -475,7 +475,8 @@ public class Parser {
      */
     private Statement A_1(ExpressionStatement root)
     {
-        if (checkType(curToken.type, TokenType.EQU) || checkType(curToken.type, TokenType.NEQU))
+        if (checkType(curToken.type, TokenType.EQU) || checkType(curToken.type, TokenType.NEQU)||
+            checkType(curToken.type, TokenType.AND) || checkType(curToken.type, TokenType.OR))
         {
             root.opr = new Token(curToken);
             nextToken();

@@ -9,8 +9,8 @@ import token.Token;
 public class IfStatement implements Statement {
 
     public Token token;
-    public Statement condiction;
-    public BlockStatement ifCondiction;
+    public Statement condition;
+    public BlockStatement ifCondition;
     public BlockStatement elseCondition;
 
 
@@ -21,9 +21,9 @@ public class IfStatement implements Statement {
 
         sb.append(s + "IF Statement\n");
         sb.append(s + "    condition:\n");
-        sb.append(condiction.getString(s + "        "));
+        sb.append(condition.getString(s + "        "));
         sb.append(s + "    IFBlock:\n");
-        sb.append(ifCondiction.getString(s+"        "));
+        sb.append(ifCondition.getString(s+"        "));
         sb.append(s + "    ElseBlock:\n");
         sb.append(elseCondition.getString(s+"        "));
 

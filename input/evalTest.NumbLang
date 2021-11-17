@@ -1,0 +1,15 @@
+2 + 3 * 4;
+false && 100;
+~false;
+~5 + 4 + 2;
+~(5+~5+1);
+
+let a = 100;
+
+let add = fn(x,y){return x + y + a;};
+
+add(1,2);
+
+let fac = fn(n){ if (n == 1){ return 1;} else { return n * fac(n-1);}};
+
+fac(5);
