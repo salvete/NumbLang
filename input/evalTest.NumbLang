@@ -1,5 +1,5 @@
 2 + 3 * 4;
-false && 100;
+//false && 100;
 ~false;
 ~5 + 4 + 2;
 ~(5+~5+1);
@@ -13,3 +13,5 @@ add(1,2);
 let fac = fn(n){ if (n == 1){ return 1;} else { return n * fac(n-1);}};
 
 fac(5);
+
+let list = [1,2,3,4,5];

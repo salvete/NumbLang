@@ -94,6 +94,7 @@ public class TokenType {
     public static final String LIST = "LIST";
     // 字典
     public static final String DICT = "DICT";
+    
 
     // 函数调用
     public static final String CALLFUNC = "CALLFUNC";

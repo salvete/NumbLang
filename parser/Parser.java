@@ -3,6 +3,9 @@ package parser;
 
 import java.util.LinkedList;
 import java.util.Objects;
+
+
+
 import ast.BlockStatement;
 import ast.CallStatement;
 import ast.ExpressionStatement;
@@ -10,6 +13,7 @@ import ast.FunctionStatement;
 import ast.IdentifierStatement;
 import ast.IfStatement;
 import ast.LetStatement;
+import ast.ListStatement;
 import ast.ReturnStatement;
 import ast.interfaces.Statement;
 import lexer.Lexer;
@@ -71,9 +75,14 @@ public class Parser {
     * <expression-statement> ::= <compare> '==' <expression-statement> | <compare>  '!=' <expression-statement> | <compare>
     * <compare> ::=  <arithmetic> '>' <compare> | <arithmetic> '<' <compare> | <arithmetic> 
     * <arithmetic> ::= <priority-arithmetic> '+' <arithmetic> | <priority-arithmetic> '-' <arithmetic> | <priority-arithmetic> 
-    * <priority-arithmetic> ::= <number> '*' <priority-arithmetic> | <number> '/' <priority-arithmetic> | <number>
+    * <priority-arithmetic> ::= <number> '*' <priority-arithmetic> | <number> '/' <priority-arithmetic> | <number> | <list> | <dict>
+    *                           | identifier | <callFunction-statement>
+    *
     * <number> ::= {~}[<integer> | <float> | true | false | (<expression-statement>)] | identifier | callfunction-statement
     * 
+    * <list> ::= '[' expression-statement (',' expression-statement) * ']'
+    * 
+    * <dict> ::= '{' (<identifier> ':' expressoinStatement) * '}'
     *  Number or Identifier:
     * <unsigned integer> ::= <digit> | <unsigned integer> <digit>
     * <integer> ::= +<unsigned integer>  | ~<unsigned integer> | <unsigned integer>
@@ -619,12 +628,73 @@ public class Parser {
                 
                 nextToken();
             }
+            else if (checkType(curToken.type, TokenType.LSBRACE))
+            {
+                res = perseListStatement();
+            }
             else
+            {
                 error(curToken.type, "Number, Identifier or '('", curToken.pos);
+                nextToken();
+            }
 
         }
 
         
+
+        return res;
+    }
+
+    /**
+     * To parse ListStatement like '[element 1, element 2, ... ,element n]'
+     * @return ListStatement
+     */
+
+    private Statement perseListStatement()
+    {
+        ListStatement res = new ListStatement();
+
+        // check curToken is '['
+        if (!checkType(curToken.type, TokenType.LSBRACE))
+        {
+            res = null;
+            error(curToken.type, TokenType.LSBRACE, curToken.pos);
+            return null;
+        }
+
+        nextToken();
+
+        while (!checkType(curToken.type, TokenType.RSBRACE))
+        {
+            Statement element = parseExpressionStatement();
+
+            res.store.add(element);
+
+            if (checkType(curToken.type, TokenType.RSBRACE))
+                break;
+
+            // check curToken is ',' or not.
+            if (!checkType(curToken.type, TokenType.COMMA))
+            {
+                
+                error(curToken.type, TokenType.COMMA, curToken.pos);
+                res = null;
+                return null;
+            }
+
+            nextToken();
+        }
+
+
+        // check curToken is ']' or not again.
+        if (!checkType(curToken.type, TokenType.RSBRACE))
+        {
+            res = null;
+            error(curToken.type, TokenType.COMMA, curToken.pos);
+            return null;
+        }
+        
+        nextToken();
 
         return res;
     }
