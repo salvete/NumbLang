@@ -3,6 +3,7 @@ package evaluator;
 import java.beans.beancontext.BeanContext;
 import java.security.AuthProvider;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Objects;
 import java.util.jar.Attributes.Name;
 
@@ -10,23 +11,10 @@ import javax.lang.model.util.ElementScanner6;
 import javax.swing.text.PlainView;
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
-import ast.BlockStatement;
-import ast.CallStatement;
-import ast.ExpressionStatement;
-import ast.FunctionStatement;
-import ast.IdentifierStatement;
-import ast.IfStatement;
-import ast.LetStatement;
-import ast.ReturnStatement;
+import ast.*;
 import ast.interfaces.Statement;
 import evaluator.enviroment.Enviroment;
-import evaluator.object.BooleanInternal;
-import evaluator.object.FloatInternal;
-import evaluator.object.FunctionInternal;
-import evaluator.object.IntegerInternal;
-import evaluator.object.NullInternel;
-import evaluator.object.ObjectTypes;
-import evaluator.object.ReturnInternal;
+import evaluator.object.*;
 import evaluator.object.interfaces.NumberOrBoolean;
 import evaluator.object.interfaces.ObjectInternal;
 import token.Token;
@@ -67,6 +55,14 @@ public class Eval {
         else if (stmt instanceof ReturnStatement)
         {
             return evalReturnStatement((ReturnStatement)stmt,env);
+        }
+        else if (stmt instanceof ListStatement)
+        {
+            return evalListStatement((ListStatement)stmt,env);
+        }
+        else if (stmt instanceof  GetElemetStatement)
+        {
+            return evalGetElementStatement((GetElemetStatement)stmt,env);
         }
         else
             return new NullInternel();
@@ -216,6 +212,10 @@ public class Eval {
                 res = revalInteger(left,right,opr);
             else if ((Objects.equals(left.Type(), ObjectTypes.FLOAT_OBJ)))
                 res = revalFloat(left,right,opr);
+            else if (Objects.equals(left.Type(),ObjectTypes.LIST_OBJ))
+            {
+                res = revalList((ListInternal)left,(ListInternal)right,opr);
+            }
             else
                 res = new NullInternel();
         }
@@ -268,6 +268,24 @@ public class Eval {
     }
 
 
+    private  static ObjectInternal revalList(ListInternal left, ListInternal right, String opr)
+    {
+        ObjectInternal res = null;
+
+        if (Objects.equals(opr,TokenType.ADD))
+        {
+            for (ObjectInternal o : right.elements)
+                left.elements.add(o);
+            res = left;
+        }
+        else
+        {
+            error("[Error] Unsupport operation on two lists: " + opr);
+            res = new NullInternel();
+        }
+
+        return res;
+    }
     private static ObjectInternal revalFloat(ObjectInternal left, ObjectInternal right, String opr)
     {
         ObjectInternal res = null;
@@ -366,6 +384,67 @@ public class Eval {
 
         return res;
     }
+
+
+    private static ObjectInternal evalListStatement(ListStatement stmt, Enviroment env)
+    {
+        ListInternal res = new ListInternal();
+
+        for ( Statement s : stmt.store)
+        {
+            res.elements.add(Eval(s,env));
+        }
+
+        return res;
+    }
+
+    private static ObjectInternal evalGetElementStatement(GetElemetStatement stmt, Enviroment env)
+    {
+        ObjectInternal res = new NullInternel();
+
+        if (!(stmt.listName instanceof  IdentifierStatement))
+        {
+            error("[Error] List name  is not correct.");
+        }
+
+        IdentifierStatement listName = (IdentifierStatement) stmt.listName;
+
+        if (!(env.Get(listName.name.value) instanceof  ListInternal))
+        {
+            error("[Error] " + listName.name.value + " is not a list.");
+            return res;
+        }
+
+        ListInternal list = (ListInternal) env.Get(listName.name.value);
+
+        if (!(stmt.listIndex instanceof ExpressionStatement))
+        {
+            error("[Error] " + "list index is not an expression.");
+            return  res;
+        }
+
+        ObjectInternal index = Eval((ExpressionStatement)stmt.listIndex,env);
+
+        if (!(index instanceof  IntegerInternal))
+        {
+            error("[Error] list index is not an integer.");
+            return res;
+        }
+
+        int pos = ((IntegerInternal)index).Value;
+
+        if (pos < 0 || pos >= list.elements.size())
+        {
+            error("[Error] index " + pos + "  is out of range.");
+            return res;
+        }
+
+        return list.elements.get(pos);
+
+    }
+
+
+
 
     private static void error(String msg)
     {
