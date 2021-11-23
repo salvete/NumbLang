@@ -17,6 +17,7 @@ import ast.FunctionStatement;
 import ast.IdentifierStatement;
 import ast.IfStatement;
 import ast.LetStatement;
+import ast.ListStatement;
 import ast.ReturnStatement;
 import ast.interfaces.Statement;
 import evaluator.enviroment.Enviroment;
@@ -24,6 +25,7 @@ import evaluator.object.BooleanInternal;
 import evaluator.object.FloatInternal;
 import evaluator.object.FunctionInternal;
 import evaluator.object.IntegerInternal;
+import evaluator.object.ListInternal;
 import evaluator.object.NullInternel;
 import evaluator.object.ObjectTypes;
 import evaluator.object.ReturnInternal;
@@ -67,6 +69,10 @@ public class Eval {
         else if (stmt instanceof ReturnStatement)
         {
             return evalReturnStatement((ReturnStatement)stmt,env);
+        }
+        else if (stmt instanceof ListStatement)
+        {
+            return evalListStatement((ListStatement)stmt,env);
         }
         else
             return new NullInternel();
@@ -216,6 +222,10 @@ public class Eval {
                 res = revalInteger(left,right,opr);
             else if ((Objects.equals(left.Type(), ObjectTypes.FLOAT_OBJ)))
                 res = revalFloat(left,right,opr);
+            else if ((Objects.equals(left.Type(),ObjectTypes.List_OBJ)))
+            {
+                res = revalList((ListInternal)left,(ListInternal)right,opr);
+            }
             else
                 res = new NullInternel();
         }
@@ -262,6 +272,28 @@ public class Eval {
             default:
                 error("Unknown: " +  lv + " " + opr + " " + rv);
                 res = new NullInternel();
+        }
+
+        return res;
+    }
+
+    private static ObjectInternal revalList(ListInternal left, ListInternal right, String opr)
+    {
+        ObjectInternal res = null;
+
+        if (Objects.equals(opr, TokenType.ADD))
+        {
+            for (ObjectInternal o : right.elements)
+            {
+                left.elements.add(o);
+            }
+
+            res = left;
+        }
+        else
+        {
+            error("[Error] Unknown operation on two lists.");
+            res = new NullInternel();
         }
 
         return res;
@@ -366,6 +398,21 @@ public class Eval {
 
         return res;
     }
+
+    private static ObjectInternal evalListStatement(ListStatement stmt, Enviroment env)
+    {
+        ListInternal res = new ListInternal();
+
+        for (Statement s : stmt.store)
+        {
+            res.elements.add(Eval(s, env));
+        }
+
+        return res;
+    }
+
+
+
 
     private static void error(String msg)
     {

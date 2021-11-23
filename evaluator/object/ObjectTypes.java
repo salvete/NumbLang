@@ -8,4 +8,5 @@ public class ObjectTypes {
     public static final String RETURN_OBJ = "RETURN";
     public static final String ERROR_OBJ = "ERROR";
     public static final String FUNCTION_OBJ = "FUNCTION";
+    public static final String List_OBJ = "LIST";
 }
