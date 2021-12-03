@@ -25,6 +25,9 @@ public class Parser {
     private void nextToken() {
         curToken = peekToken;
         peekToken = lexer.nextToken();
+
+        //记得去掉注释
+
     }
 
     public boolean isEnd() {
@@ -88,7 +91,7 @@ public class Parser {
             Statement s = null;
 
             // Comment
-            if (checkType(curToken.type, TokenType.COMMENT))
+            while (checkType(curToken.type, TokenType.COMMENT))
                 nextToken();
 
             if (checkType(curToken.type, TokenType.LET)) {
@@ -584,7 +587,15 @@ public class Parser {
                 nextToken();
             } else if (checkType(curToken.type, TokenType.LSBRACE)) {
                 res = perseListStatement();
-            } else {
+            }else if (checkType(curToken.type, TokenType.STRING))
+            {
+                res = new StringStatement(curToken.value);
+                nextToken();
+            }else if (checkType(curToken.type, TokenType.LBRACE))
+            {
+                res = parseDictStatement();
+            }
+            else {
                 error(curToken.type, "Number, Identifier or '('", curToken.pos);
                 nextToken();
             }
@@ -645,6 +656,68 @@ public class Parser {
         return res;
     }
 
+
+    private Statement parseDictStatement()
+    {
+        DictStatement res = null;
+
+        if (!checkType(curToken.type, TokenType.LBRACE))
+        {
+            error(curToken.type, TokenType.LBRACE, curToken.pos);
+            return res;    
+        }
+
+        nextToken();
+
+        res = new DictStatement();
+
+        while (!checkType(curToken.type, TokenType.RBRACE))
+        {
+            if (!checkType(curToken.type, TokenType.STRING))
+            {
+                error(curToken.type, "Dict's key should be STRING", curToken.pos);
+                return res;
+            }
+            
+            StringStatement key = (StringStatement)parseExpressionStatement();
+
+            if (!checkType(curToken.type, TokenType.COLONS))
+            {
+                error(curToken.type, TokenType.COLONS, curToken.pos);
+                res = null;
+                return res;
+            }
+
+            nextToken();
+
+            Statement value = parseExpressionStatement();
+
+            res.dict.put(key, value);
+
+            if (checkType(curToken.type, TokenType.RBRACE))
+                break;
+            
+            if (!checkType(curToken.type, TokenType.COMMA))
+            {
+                error(curToken.type, TokenType.COMMA, curToken.pos);
+                res = null;
+                return res;
+            }
+            
+            nextToken();
+        }
+
+        if (!checkType(curToken.type, TokenType.RBRACE))
+        {
+            error(curToken.type,TokenType.RBRACE, curToken.pos);
+            res = null;
+            return res;
+        }
+
+        nextToken();
+
+        return res;
+    }
 
     /**
      * To check wether one type equals to another.

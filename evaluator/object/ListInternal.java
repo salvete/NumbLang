@@ -38,4 +38,10 @@ public class ListInternal implements ObjectInternal {
         sb.append("]");
         return sb.toString();
     }
+
+    @Override
+    public String Inspect(String s) {
+        // TODO Auto-generated method stub
+        return s + Inspect();
+    }
 }

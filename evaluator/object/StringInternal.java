@@ -2,18 +2,24 @@ package evaluator.object;
 
 import evaluator.object.interfaces.ObjectInternal;
 
-public class NullInternel implements ObjectInternal {
+public class StringInternal implements ObjectInternal {
+    public String content;
+
+    public StringInternal(String s)
+    {
+        content = s;
+    }
 
     @Override
     public String Type() {
         // TODO Auto-generated method stub
-        return null;
+        return ObjectTypes.STRING_OBJ;
     }
 
     @Override
     public String Inspect() {
         // TODO Auto-generated method stub
-        return "null";
+        return content;
     }
 
     @Override

@@ -28,5 +28,11 @@ public class BooleanInternal implements ObjectInternal,NumberOrBoolean {
         // TODO Auto-generated method stub
         return String.valueOf(Value);
     }
+
+    @Override
+    public String Inspect(String s) {
+        // TODO Auto-generated method stub
+        return s + Inspect();
+    }
     
 }

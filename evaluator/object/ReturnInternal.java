@@ -22,5 +22,11 @@ public class ReturnInternal implements ObjectInternal {
         // TODO Auto-generated method stub
         return Value.Inspect();
     }
+
+    @Override
+    public String Inspect(String s) {
+        // TODO Auto-generated method stub
+        return s + Inspect();
+    }
     
 }

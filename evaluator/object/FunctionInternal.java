@@ -29,5 +29,12 @@ public class FunctionInternal implements ObjectInternal {
         // TODO Auto-generated method stub
         return "A function.";
     }
+
+
+    @Override
+    public String Inspect(String s) {
+        // TODO Auto-generated method stub
+        return s + Inspect();
+    }
     
 }

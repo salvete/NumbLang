@@ -29,5 +29,11 @@ public class IntegerInternal implements ObjectInternal,NumberOrBoolean {
         // TODO Auto-generated method stub
         Value = -Value;
     }
+
+    @Override
+    public String Inspect(String s) {
+        // TODO Auto-generated method stub
+        return s + Inspect();
+    }
     
 }

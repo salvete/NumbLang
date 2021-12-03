@@ -4,6 +4,7 @@ import java.beans.beancontext.BeanContext;
 import java.security.AuthProvider;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.jar.Attributes.Name;
 
@@ -63,6 +64,14 @@ public class Eval {
         else if (stmt instanceof  GetElemetStatement)
         {
             return evalGetElementStatement((GetElemetStatement)stmt,env);
+        }
+        else if (stmt instanceof StringStatement)
+        {
+            return evalStringStatement((StringStatement)stmt,env);
+        }
+        else if (stmt instanceof DictStatement)
+        {
+            return evalDictStatement((DictStatement)stmt, env);
         }
         else
             return new NullInternel();
@@ -216,6 +225,10 @@ public class Eval {
             {
                 res = revalList((ListInternal)left,(ListInternal)right,opr);
             }
+            else if (Objects.equals(left.Type(), ObjectTypes.STRING_OBJ))
+            {
+                res = revalString((StringInternal)left, (StringInternal)right, opr);
+            }
             else
                 res = new NullInternel();
         }
@@ -289,6 +302,25 @@ public class Eval {
         return res;
     }
 
+
+    private static ObjectInternal revalString(StringInternal left, StringInternal right, String opr)
+    {
+        ObjectInternal res = null;
+
+        if (!Objects.equals(opr, TokenType.ADD))
+        {
+            error("[Error] Unknow operation on two Strings: " + opr);
+        }
+        else
+        {
+            StringBuilder sb = new StringBuilder();
+            sb.append(left.content);
+            sb.append(right.content);
+            res = new StringInternal(sb.toString());
+        }
+
+        return res;
+    }
 
    
     private static ObjectInternal revalFloat(ObjectInternal left, ObjectInternal right, String opr)
@@ -413,39 +445,78 @@ public class Eval {
 
         IdentifierStatement listName = (IdentifierStatement) stmt.listName;
 
-        if (!(env.Get(listName.name.value) instanceof  ListInternal))
+        if (!(env.Get(listName.name.value) instanceof  ListInternal) && !(env.Get(listName.name.value) instanceof DictInternal))
         {
-            error("[Error] " + listName.name.value + " is not a list.");
+            error("[Error] " + listName.name.value + " is not a list or a dict.");
             return res;
         }
 
-        ListInternal list = (ListInternal) env.Get(listName.name.value);
-
-        if (!(stmt.listIndex instanceof ExpressionStatement))
+        if (env.Get(listName.name.value) instanceof ListInternal)
         {
-            error("[Error] " + "list index is not an expression.");
-            return  res;
+            ListInternal list = (ListInternal) env.Get(listName.name.value);
+
+            if (!(stmt.listIndex instanceof ExpressionStatement))
+            {
+                error("[Error] " + "list index is not an expression.");
+                return  res;
+            }
+
+            ObjectInternal index = Eval((ExpressionStatement)stmt.listIndex,env);
+
+            if (!(index instanceof  IntegerInternal))
+            {
+                error("[Error] list index is not an integer.");
+                return res;
+            }
+
+            int pos = ((IntegerInternal)index).Value;
+
+            if (pos < 0 || pos >= list.elements.size())
+            {
+                error("[Error] index " + pos + "  is out of range.");
+                return res;
+            }
+
+            return list.elements.get(pos);    
         }
-
-        ObjectInternal index = Eval((ExpressionStatement)stmt.listIndex,env);
-
-        if (!(index instanceof  IntegerInternal))
+        else
         {
-            error("[Error] list index is not an integer.");
-            return res;
+
+            DictInternal dict = (DictInternal) env.Get(listName.name.value);
+
+            if (!(stmt.listIndex instanceof StringStatement))
+            {
+                error("[Error] " + "dict inded is not a strign.");
+                return res;
+            }
+
+            StringInternal key = (StringInternal) Eval((StringStatement)stmt.listIndex, env);
+
+            ObjectInternal tryGet = dict.dict.get(key.content);
+
+            return tryGet == null ? res : tryGet;
         }
-
-        int pos = ((IntegerInternal)index).Value;
-
-        if (pos < 0 || pos >= list.elements.size())
-        {
-            error("[Error] index " + pos + "  is out of range.");
-            return res;
-        }
-
-        return list.elements.get(pos);
-
     }
+
+    private static ObjectInternal evalStringStatement(StringStatement stmt, Enviroment env)
+    {
+        return new StringInternal(stmt.content);
+    }
+
+    private static ObjectInternal evalDictStatement(DictStatement stmt, Enviroment env)
+    {
+        DictInternal res = new DictInternal();
+
+        for(Map.Entry<StringStatement, Statement> e : stmt.dict.entrySet())
+        {
+            StringInternal key = (StringInternal) Eval(e.getKey(), env);
+            ObjectInternal value = Eval(e.getValue(),env);
+            res.dict.put(key.content, value);
+        }
+
+        return res;
+    }
+
 
     private static void error(String msg)
     {

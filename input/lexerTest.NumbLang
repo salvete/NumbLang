@@ -58,6 +58,10 @@ fdafdafdafda
 
 let a = [1,2,3,4,5]
 
+let a = "12345";
+
+let a = {};
+
 
 
 

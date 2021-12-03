@@ -9,5 +9,6 @@ public class ObjectTypes {
     public static final String ERROR_OBJ = "ERROR";
     public static final String FUNCTION_OBJ = "FUNCTION";
     public static final String LIST_OBJ = "LIST";
-
+    public static final String STRING_OBJ = "STRING";
+    public static final String DICT_OBJ = "DICT";
 }

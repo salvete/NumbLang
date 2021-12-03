@@ -47,6 +47,8 @@ public class TokenType {
     public static final String COMMA = "COMMA";
     // 分号
     public static final String SEMICOLON = "SEMICOLON";
+    // 冒号
+    public static final String COLONS = "COLONS";
     // 左小括号 (
     public static final String LPAREN = "LPAREN";
     // 右小括号 )
@@ -116,6 +118,7 @@ public class TokenType {
         types.put("&&", AND);
         types.put(",", COMMA);
         types.put(";", SEMICOLON);
+        types.put(":", COLONS);
         types.put("(", LPAREN);
         types.put(")", RPAREN);
         types.put("[", LSBRACE);
