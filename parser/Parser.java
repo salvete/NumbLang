@@ -26,8 +26,9 @@ public class Parser {
         curToken = peekToken;
         peekToken = lexer.nextToken();
 
-        //记得去掉注释
-
+        //去掉注释
+        while (curToken != null && Objects.equals(curToken.type, TokenType.COMMENT))
+            nextToken();
     }
 
     public boolean isEnd() {
@@ -89,10 +90,6 @@ public class Parser {
             return null;
         else {
             Statement s = null;
-
-            // Comment
-            while (checkType(curToken.type, TokenType.COMMENT))
-                nextToken();
 
             if (checkType(curToken.type, TokenType.LET)) {
                 s = parseLetStatement();
