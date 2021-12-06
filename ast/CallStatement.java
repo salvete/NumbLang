@@ -6,10 +6,15 @@ import ast.interfaces.Statement;
 
 public class CallStatement implements Statement {
     public Statement function;
-    public LinkedList<Statement> arguments;
+    public LinkedList<LinkedList<Statement>> arguments;
     public boolean posOrNeg = false;
 
     
+    public CallStatement()
+    {
+        arguments = new LinkedList<>();
+    }
+
     @Override
     public String getString(String s) {
         // TODO Auto-generated method stub
@@ -19,13 +24,19 @@ public class CallStatement implements Statement {
         sb.append(s + "    function:\n");
         sb.append(function.getString(s + "        "));
         
-        int len = arguments.size();
-
-        for (int i = 0; i < len; i ++)
+        for (int j = 0; j < arguments.size(); j ++)
         {
-            sb.append(s + "        Argument" + (i+1) + "\n");
-            sb.append(arguments.get(i).getString(s + "            "));
+            sb.append((s + "    ==" + (j+1)));
+            int len = arguments.get(j).size();
+
+            for (int i = 0; i < len; i ++)
+            {
+                sb.append(s + "        Argument" + (i+1) + "\n");
+                sb.append(arguments.get(j).get(i).getString(s + "            "));
+            }
         }
+
+        
 
         return sb.toString();
     }

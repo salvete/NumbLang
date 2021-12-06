@@ -91,60 +91,261 @@ public class Eval {
         return res;
     }
 
-    private static ObjectInternal evalCallStatement(CallStatement stmt, Enviroment env)
+    
+    private static ObjectInternal curry(FunctionInternal retFun, LinkedList<LinkedList<Statement>> args, Enviroment env)
     {
-        LinkedList<ObjectInternal> paras = getParameters(stmt.arguments, env);
 
-        if (paras.size() != stmt.arguments.size())
+        LinkedList<ObjectInternal>paras = getParameters(args.get(0), env);
+
+        if (paras.size() != args.get(0).size())
         {
             error("Prameters are wrong!");
             return new NullInternel();
         }
 
-        ObjectInternal tmp = Eval(stmt.function, env);
+        args.removeFirst();
 
-        if (!(tmp instanceof FunctionInternal))
-        {
-            StringBuilder sb = new StringBuilder();
-            sb.append("function:\n");
-            sb.append(stmt.function.getString("    "));
-            sb.append("does not exit!\n");
-            error(sb.toString());
-            return new NullInternel();
-        }
-        
-        FunctionInternal fun = (FunctionInternal)tmp;
+        Enviroment local = Enviroment.getNewEnviroment(env);
 
-        Enviroment local = Enviroment.getNewEnviroment(fun.env);
-
-        if (paras.size() != fun.parameters.size())
+        if (paras.size() != retFun.parameters.size())
         {
             StringBuilder sb = new StringBuilder();
             sb.append("Parameters' size don't match:\n");
             sb.append(paras.size() + "\n");
-            sb.append(fun.parameters.size() + "\n");
+            sb.append(retFun.parameters.size() + "\n");
             error(sb.toString());
         }
 
-        for (int i = 0; i < fun.parameters.size(); i ++)
+        for (int i = 0; i < retFun.parameters.size(); i ++)
         {
-            if (!(fun.parameters.get(i) instanceof IdentifierStatement))
+            if (!(retFun.parameters.get(i) instanceof IdentifierStatement))
             {
                 error("function parameter's type is not identifier!");
                 return new NullInternel();
             }
 
-            String name = ((IdentifierStatement)fun.parameters.get(i)).name.value;
+            String name = ((IdentifierStatement)retFun.parameters.get(i)).name.value;
 
             local.Set(name, paras.get(i));
         }
 
-        return Eval(fun.body, local);
+        ObjectInternal res = Eval(retFun.body, local);
+
+        if(args.size() == 0)
+            return res;
+        else
+        {
+            if (!(res instanceof FunctionInternal))
+            {
+                error("multicall function!");
+                return new NullInternel();
+            }
+
+            return curry((FunctionInternal)res, args, local);
+        }
+    }
+
+
+    private static ObjectInternal evalCallStatement(CallStatement stmt, Enviroment env)
+    {
+
+        LinkedList<ObjectInternal> paras = getParameters(stmt.arguments.get(0), env);
+
+            if (paras.size() != stmt.arguments.get(0).size())
+            {
+                error("Prameters are wrong!");
+                return new NullInternel();
+            }
+
+            stmt.arguments.removeFirst();
+
+          
+            ObjectInternal tmp = Eval(stmt.function, env);
+
+            if (!(tmp instanceof FunctionInternal))
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.append("function:\n");
+                sb.append(stmt.function.getString("    "));
+                sb.append("does not exit!\n");
+                error(sb.toString());
+                return new NullInternel();
+            }
+            
+            FunctionInternal fun = (FunctionInternal)tmp;
+
+            Enviroment local = Enviroment.getNewEnviroment(fun.env);
+
+            if (paras.size() != fun.parameters.size())
+            {
+                StringBuilder sb = new StringBuilder();
+                sb.append("Parameters' size don't match:\n");
+                sb.append(paras.size() + "\n");
+                sb.append(fun.parameters.size() + "\n");
+                error(sb.toString());
+            }
+
+            for (int i = 0; i < fun.parameters.size(); i ++)
+            {
+                if (!(fun.parameters.get(i) instanceof IdentifierStatement))
+                {
+                    error("function parameter's type is not identifier!");
+                    return new NullInternel();
+                }
+
+                String name = ((IdentifierStatement)fun.parameters.get(i)).name.value;
+
+                local.Set(name, paras.get(i));
+            }
+
+            ObjectInternal res = Eval(fun.body, local);
+
+            if (stmt.arguments.size() == 0)
+                return res;
+            else
+            {
+                if (!(res instanceof FunctionInternal))
+                {
+                    error("multicall function!");
+                    return new NullInternel();
+                }
+
+                return curry((FunctionInternal)res, stmt.arguments, local);
+            }
+
+
+
+        // if (stmt.arguments.size() > 1)
+        // {
+        //     // LinkedList<LinkedList<ObjectInternal>> paras = getParameters(stmt.arguments[0], env);
+
+        //     LinkedList<ObjectInternal> paras = getParameters(stmt.arguments.get(0), env);
+
+        //     if (paras.size() != stmt.arguments.get(0).size())
+        //     {
+        //         error("Prameters are wrong!");
+        //         return new NullInternel();
+        //     }
+
+        //     stmt.arguments.removeFirst();
+
+          
+        //     ObjectInternal tmp = Eval(stmt.function, env);
+
+        //     if (!(tmp instanceof FunctionInternal))
+        //     {
+        //         StringBuilder sb = new StringBuilder();
+        //         sb.append("function:\n");
+        //         sb.append(stmt.function.getString("    "));
+        //         sb.append("does not exit!\n");
+        //         error(sb.toString());
+        //         return new NullInternel();
+        //     }
+            
+        //     FunctionInternal fun = (FunctionInternal)tmp;
+
+        //     Enviroment local = Enviroment.getNewEnviroment(fun.env);
+
+        //     if (paras.size() != fun.parameters.size())
+        //     {
+        //         StringBuilder sb = new StringBuilder();
+        //         sb.append("Parameters' size don't match:\n");
+        //         sb.append(paras.size() + "\n");
+        //         sb.append(fun.parameters.size() + "\n");
+        //         error(sb.toString());
+        //     }
+
+        //     for (int i = 0; i < fun.parameters.size(); i ++)
+        //     {
+        //         if (!(fun.parameters.get(i) instanceof IdentifierStatement))
+        //         {
+        //             error("function parameter's type is not identifier!");
+        //             return new NullInternel();
+        //         }
+
+        //         String name = ((IdentifierStatement)fun.parameters.get(i)).name.value;
+
+        //         local.Set(name, paras.get(i));
+        //     }
+
+        //     ObjectInternal retFun = Eval(fun.body, local);
+
+        //     if (! (retFun instanceof FunctionInternal))
+        //     {
+        //         error("retFun is not FunctionInternal!");
+        //         return new NullInternel();
+        //     }
+
+        //     ((FunctionInternal)retFun).env = local;
+
+        //     return curry((FunctionInternal)retFun, stmt.arguments, local);
+
+
+        //     //此时fun包含了多个函数调用
+
+        // }
+        // else
+        // {
+
+        //     LinkedList<ObjectInternal> paras = getParameters(stmt.arguments.get(0), env);
+        //     // LinkedList<ObjectInternal> paras = getParameters(stmt.arguments, env);
+
+        //     if (paras.size() == 1 && paras.size() != stmt.arguments.get(0).size())
+        //     {
+        //         error("Prameters are wrong!");
+        //         return new NullInternel();
+        //     }
+
+        //     ObjectInternal tmp = Eval(stmt.function, env);
+
+        //     if (!(tmp instanceof FunctionInternal))
+        //     {
+        //         StringBuilder sb = new StringBuilder();
+        //         sb.append("function:\n");
+        //         sb.append(stmt.function.getString("    "));
+        //         sb.append("does not exit!\n");
+        //         error(sb.toString());
+        //         return new NullInternel();
+        //     }
+            
+        //     FunctionInternal fun = (FunctionInternal)tmp;
+
+        //     Enviroment local = Enviroment.getNewEnviroment(fun.env);
+
+        //     if (paras.size() != fun.parameters.size())
+        //     {
+        //         StringBuilder sb = new StringBuilder();
+        //         sb.append("Parameters' size don't match:\n");
+        //         sb.append(paras.size() + "\n");
+        //         sb.append(fun.parameters.size() + "\n");
+        //         error(sb.toString());
+        //     }
+
+        //     for (int i = 0; i < fun.parameters.size(); i ++)
+        //     {
+        //         if (!(fun.parameters.get(i) instanceof IdentifierStatement))
+        //         {
+        //             error("function parameter's type is not identifier!");
+        //             return new NullInternel();
+        //         }
+
+        //         String name = ((IdentifierStatement)fun.parameters.get(i)).name.value;
+
+        //         local.Set(name, paras.get(i));
+        //     }
+
+        //     return Eval(fun.body, local);
+
+        // }
+
     }
 
     private static LinkedList<ObjectInternal> getParameters(LinkedList<Statement> parameters, Enviroment env)
     {
         LinkedList<ObjectInternal> res = new LinkedList<>();
+
+       
+        LinkedList<ObjectInternal> tmp = new LinkedList<>();
 
         for (Statement s: parameters)
         {
@@ -153,8 +354,9 @@ public class Eval {
             if (now.Type() == ObjectTypes.NULL_OBJ)
                 break;
 
-            res.add(now);
-        }
+                res.add(now);
+        }    
+
         return res;
     }
 

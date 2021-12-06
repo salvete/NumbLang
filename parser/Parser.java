@@ -204,7 +204,12 @@ public class Parser {
         if (checkType(curToken.type, TokenType.LPAREN)) {
             CallStatement callStatement = new CallStatement();
             callStatement.function = identifierStatement;
-            callStatement.arguments = parseArguments();
+
+            while (checkType(curToken.type, TokenType.LPAREN))
+            {
+                callStatement.arguments.add(parseArguments());
+            }
+
             res = callStatement;
         } else if (checkType(curToken.type, TokenType.LSBRACE)) {
             GetElemetStatement getElemetStatement = new GetElemetStatement();
@@ -395,7 +400,12 @@ public class Parser {
         if (checkType(curToken.type, TokenType.LPAREN)) {
             CallStatement callStatement = new CallStatement();
             callStatement.function = functionStatement;
-            callStatement.arguments = parseArguments();
+
+            while (checkType(curToken.type, TokenType.LPAREN))
+            {
+                callStatement.arguments.add(parseArguments()); 
+            }
+            
             res = callStatement;
         }
 
@@ -742,7 +752,6 @@ public class Parser {
     }
 
 }
-
 
 
 

@@ -1,4 +1,4 @@
-
+/*
 2 + 3 * 4;
 //false && 100;
 ~false;
@@ -62,3 +62,13 @@ a["e"];
 let tmp = a["c"];
 
 tmp["d"];
+
+let maxArr = fn(arr){}
+*/
+
+let a = fn(x){ let x= 1; let y=2; return fn(y){return fn(z){return x /*此时x=1*/ + y * z;};};};
+
+
+a(2)(3)(4);
+
+fn(x,y){return x + y;}(2,4);
