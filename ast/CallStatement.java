@@ -26,13 +26,12 @@ public class CallStatement implements Statement {
         
         for (int j = 0; j < arguments.size(); j ++)
         {
-            sb.append((s + "    ==" + (j+1)));
             int len = arguments.get(j).size();
-
+            sb.append(s + "        Layer" + (j+1) + "\n");
             for (int i = 0; i < len; i ++)
             {
-                sb.append(s + "        Argument" + (i+1) + "\n");
-                sb.append(arguments.get(j).get(i).getString(s + "            "));
+                sb.append(s + "            Argument" + (i+1) + "\n");
+                sb.append(arguments.get(j).get(i).getString(s + "                "));
             }
         }
 

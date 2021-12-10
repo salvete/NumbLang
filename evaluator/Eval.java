@@ -103,7 +103,11 @@ public class Eval {
             return new NullInternel();
         }
 
+        LinkedList<Statement> saved = new LinkedList<>(args.get(0));
+
         args.removeFirst();
+
+
 
         Enviroment local = Enviroment.getNewEnviroment(env);
 
@@ -132,7 +136,10 @@ public class Eval {
         ObjectInternal res = Eval(retFun.body, local);
 
         if(args.size() == 0)
+        {
+            args.add(0,saved);
             return res;
+        }
         else
         {
             if (!(res instanceof FunctionInternal))
@@ -141,13 +148,16 @@ public class Eval {
                 return new NullInternel();
             }
 
-            return curry((FunctionInternal)res, args, local);
+            ObjectInternal ans = curry((FunctionInternal)res, args, local);
+            args.add(0,saved);
+            return ans;
         }
     }
 
 
     private static ObjectInternal evalCallStatement(CallStatement stmt, Enviroment env)
     {
+
 
         LinkedList<ObjectInternal> paras = getParameters(stmt.arguments.get(0), env);
 
@@ -156,6 +166,8 @@ public class Eval {
                 error("Prameters are wrong!");
                 return new NullInternel();
             }
+
+            LinkedList<Statement> saved = new LinkedList<>(stmt.arguments.get(0));
 
             stmt.arguments.removeFirst();
 
@@ -201,7 +213,10 @@ public class Eval {
             ObjectInternal res = Eval(fun.body, local);
 
             if (stmt.arguments.size() == 0)
+            {
+                stmt.arguments.add(0,saved);
                 return res;
+            }
             else
             {
                 if (!(res instanceof FunctionInternal))
@@ -210,7 +225,9 @@ public class Eval {
                     return new NullInternel();
                 }
 
-                return curry((FunctionInternal)res, stmt.arguments, local);
+                ObjectInternal ans =  curry((FunctionInternal)res, stmt.arguments, local);
+                stmt.arguments.add(0, saved);
+                return ans;
             }
 
     }

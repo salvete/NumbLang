@@ -59,8 +59,18 @@ let a = "12345";
 
 
 let a = {"a" : 100, "b" :{"c":101, "d":102}};
-*/
+
 
 let a = fn(x){return fn(y){return x + y;};};
 
 a(10)(100);
+*/
+
+let exeTwice = fn(f, x){ return f(f(x));};
+let addTwo = fn(x) { return x + 2;};
+let mulThree = fn(x) { return x * 3;};
+
+exeTwice(addTwo,3); // -> 7
+exeTwice;
+exeTwice(mulThree,12); // -> 108
+

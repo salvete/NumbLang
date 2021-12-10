@@ -66,9 +66,35 @@ tmp["d"];
 let maxArr = fn(arr){}
 */
 
-let a = fn(x){ let x= 1; let y=2; return fn(y){return fn(z){return x /*此时x=1*/ + y * z;};};};
+let a = fn(x){  let y=2; return fn(y){return fn(z){return x /*此时x=1*/ + y * z;};};};
 
 
 a(2)(3)(4);
 
+a(2)(3)(4);
+
+/*
 fn(x,y){return x + y;}(2,4);
+
+let adderFactory = fn(x){ return fn(y){ return x + y;};};
+let addTwo = adderFactory(2);
+x;
+addTwo(3);
+*/
+
+
+let exeTwice = fn(f, x){ return f(f(x));};
+let addTwo = fn(x) { return x + 2;};
+let mulThree = fn(x) { return x * 3;};
+
+exeTwice(addTwo,3); // -> 7
+exeTwice;
+exeTwice(mulThree,12); // -> 108
+
+let a = fn(f,x){return f(x);};
+
+let f = fn(x){ return fn(y){ return fn(z){return x + y + z;};};};
+
+a(f,2)(3)(8);
+
+

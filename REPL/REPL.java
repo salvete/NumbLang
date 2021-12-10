@@ -9,11 +9,21 @@ import java.util.Scanner;
 import lexer.Lexer;
 import token.Token;
 import parser.Parser;
+import java.util.*;
+
 
 public class REPL {
     
     public static void main(String[] args) throws IOException {
+        Scanner sc = new Scanner(System.in);
         
+        StringBuilder sb = new StringBuilder();
+       
+
+        while (sc.hasNext())
+        {
+            System.out.println(sc.nextLine());
+        }
     }
 
 }
