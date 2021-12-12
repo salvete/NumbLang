@@ -756,13 +756,14 @@ public class Parser {
     {
         Statement res = null;
 
+
         if (!checkType(curToken.type, TokenType.BUILDIN))
         {
             error(curToken.type, TokenType.BUILDIN, curToken.pos);
             return null;
         }
 
-        LenStatement len = new LenStatement();
+        BuildInStatement len = new BuildInStatement();
         len.func = new Token(curToken);
 
         nextToken();
@@ -777,6 +778,7 @@ public class Parser {
         nextToken();
 
         len.lenObj = getNextStatementWithoutCheck();
+
 
         if (!checkType(curToken.type, TokenType.RPAREN))
         {

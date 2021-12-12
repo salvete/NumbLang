@@ -147,3 +147,12 @@ len(g);
 len(h);
 len(h["name"]);
 
+type(a);
+type(b);
+type(c);
+type(d);
+type(e);
+type(f);
+type(g);
+type(h);
+type(h["name"]);

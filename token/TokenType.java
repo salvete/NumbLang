@@ -138,6 +138,7 @@ public class TokenType {
         types.put("return", RETURN);
 
         types.put("len", BUILDIN);
+        types.put("type", BUILDIN);
 
         twoOpr.add("!");
         twoOpr.add("|");

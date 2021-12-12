@@ -622,29 +622,41 @@ public class Eval {
 
     private static ObjectInternal evalBuildInStatement(BuildIn stmt, Enviroment env)
     {
-        if (stmt instanceof LenStatement)
+        if (stmt instanceof BuildInStatement)
         {
-            LenStatement len = (LenStatement)stmt;
-
-            ObjectInternal o = Eval(len.lenObj, env);
-
             ObjectInternal res = new NullInternel();
 
-            if (o instanceof IntegerInternal)
-                res = o;
-            else if (o instanceof FloatInternal)
-                res = o;
-            else if (o instanceof BooleanInternal)
-                res = o;
-            else if (o instanceof StringInternal)
-                res = new IntegerInternal(((StringInternal)o).content.length());
-            else if (o instanceof DictInternal)
-                res = new IntegerInternal(((DictInternal)o).dict.size());
-            else if (o instanceof FunctionInternal)
-                res = new IntegerInternal(((FunctionInternal)o).parameters.size());
-            else if (o instanceof ListInternal)
-                res = new IntegerInternal(((ListInternal)o).elements.size());
-            
+            if (Objects.equals(stmt.buildIn(), "len"))
+            {
+                BuildInStatement len = (BuildInStatement)stmt;
+
+                ObjectInternal o = Eval(len.lenObj, env);
+
+                if (o instanceof IntegerInternal)
+                    res = o;
+                else if (o instanceof FloatInternal)
+                    res = o;
+                else if (o instanceof BooleanInternal)
+                    res = o;
+                else if (o instanceof StringInternal)
+                    res = new IntegerInternal(((StringInternal)o).content.length());
+                else if (o instanceof DictInternal)
+                    res = new IntegerInternal(((DictInternal)o).dict.size());
+                else if (o instanceof FunctionInternal)
+                    res = new IntegerInternal(((FunctionInternal)o).parameters.size());
+                else if (o instanceof ListInternal)
+                    res = new IntegerInternal(((ListInternal)o).elements.size());
+            }
+            else if (Objects.equals(stmt.buildIn(), "type"))
+            {
+                BuildInStatement type = (BuildInStatement)stmt;
+
+                ObjectInternal o = Eval(type.lenObj, env);
+
+                res =  new StringInternal(o.Type().toLowerCase());
+            }
+
+
             return res;
         }
         else

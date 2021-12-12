@@ -4,10 +4,9 @@ import ast.interfaces.BuildIn;
 import ast.interfaces.Statement;
 import token.Token;
 
-public class LenStatement implements BuildIn {
+public class BuildInStatement implements BuildIn {
     public Token func;
     public Statement lenObj;
-
 
     @Override
     public String getString(String s) {
@@ -27,13 +26,13 @@ public class LenStatement implements BuildIn {
     @Override
     public String getType() {
         // TODO Auto-generated method stub
-        return "LenStatement";
+        return "BuildStatement";
     }
 
     @Override
     public String buildIn() {
         // TODO Auto-generated method stub
-        return "len";
+        return func.value;
     }
     
 }

@@ -17,5 +17,6 @@ let h = {"name":"Bob","age":25};
 
 len(a);
 
+type(a);
 
 
