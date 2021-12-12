@@ -64,7 +64,6 @@ let a = {"a" : 100, "b" :{"c":101, "d":102}};
 let a = fn(x){return fn(y){return x + y;};};
 
 a(10)(100);
-*/
 
 let exeTwice = fn(f, x){ return f(f(x));};
 let addTwo = fn(x) { return x + 2;};
@@ -73,4 +72,26 @@ let mulThree = fn(x) { return x * 3;};
 exeTwice(addTwo,3); // -> 7
 exeTwice;
 exeTwice(mulThree,12); // -> 108
+*/
+
+//测试语法输入
+
+//定义加法函数
+let add = fn(x,y){
+    return x + y;
+};
+
+add(2,3+4);
+
+let b = if (3 > 4){
+    15;
+} else
+{
+    16;
+};
+
+
+len(add);
+len(b);
+len(12+4);
 

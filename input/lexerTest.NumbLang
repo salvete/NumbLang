@@ -1,69 +1,21 @@
-let five = 5;
+//测试词法输入
+let a = 5.12;
 
-// 使得ten为10
-let ten = 10;
-
-let var = 12.34230;
-
-/**
-*在这里定义了一个函数
-*/
-
-/*
-* add :函数名
-*/
-let add = fn(x,y){
-  x + y;
+let b = fn(x){
+  return x * x;
 };
 
-let result = add(five,ten);
+let c = 2 + 3 * 4;
 
-/**
-ffdafdafdafda ******************8
-**********
-*
+let d = b(10);
 
-fdafdafdafda
-****/
+let f = "Hello,world";
 
-5 < 10 > 5;
+let g = [1,2,4*5,true,false,3==2];
 
-if (5 < 10)
-{
-  return true;
-}
-else
-{
-  return false;
-}
+let h = {"name":"Bob","age":25};
 
-10 == 10;
-
-~6 = 19;
-
-10 != 9;
-
-true || false;
-
-true && true;
-
-true
-
-
-fdafdafdafda
-fdafdafdafdafda
-
-
-fdafdafdafda
-
-let a = [1,2,3,4,5]
-
-let a = "12345";
-
-let a = {};
-
-
-
+len(a);
 
 
 

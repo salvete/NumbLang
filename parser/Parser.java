@@ -120,6 +120,28 @@ public class Parser {
 
     }
 
+    private Statement getNextStatementWithoutCheck()
+    {
+        if (lexer.isEnd())
+            return null;
+        else {
+            Statement s = null;
+
+            if (checkType(curToken.type, TokenType.LET)) {
+                s = parseLetStatement();
+            } else if (checkType(curToken.type, TokenType.RETURN)) {
+                s = parseReturnStatement();
+
+            } else if (checkType(curToken.type, TokenType.IF)) {
+                s = parseIfStatement();
+            } else {
+                s = parseExpressionStatement();
+            }
+
+            return s;
+        }
+    }
+
     /**
      * To parse Let Statement
      *
@@ -602,6 +624,10 @@ public class Parser {
             {
                 res = parseDictStatement();
             }
+            else if (checkType(curToken.type, TokenType.BUILDIN))
+            {
+                res = parseBuildIn();
+            }
             else {
                 error(curToken.type, "Number, Identifier or '('", curToken.pos);
                 nextToken();
@@ -725,6 +751,47 @@ public class Parser {
 
         return res;
     }
+
+    private Statement parseBuildIn()
+    {
+        Statement res = null;
+
+        if (!checkType(curToken.type, TokenType.BUILDIN))
+        {
+            error(curToken.type, TokenType.BUILDIN, curToken.pos);
+            return null;
+        }
+
+        LenStatement len = new LenStatement();
+        len.func = new Token(curToken);
+
+        nextToken();
+
+        if (!checkType(curToken.type, TokenType.LPAREN))
+        {
+            error(curToken.type, TokenType.LPAREN, curToken.pos);
+            len = null;
+            return null;
+        }
+
+        nextToken();
+
+        len.lenObj = getNextStatementWithoutCheck();
+
+        if (!checkType(curToken.type, TokenType.RPAREN))
+        {
+            error(curToken.type, TokenType.RPAREN, curToken.pos);
+            len = null;
+            return null;
+        }
+        
+        nextToken();
+
+        res = len;
+        
+        return res;
+    }
+
 
     /**
      * To check wether one type equals to another.

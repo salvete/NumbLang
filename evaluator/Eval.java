@@ -13,6 +13,7 @@ import javax.swing.text.PlainView;
 import javax.swing.text.StyleContext.SmallAttributeSet;
 
 import ast.*;
+import ast.interfaces.BuildIn;
 import ast.interfaces.Statement;
 import evaluator.enviroment.Enviroment;
 import evaluator.object.*;
@@ -72,6 +73,10 @@ public class Eval {
         else if (stmt instanceof DictStatement)
         {
             return evalDictStatement((DictStatement)stmt, env);
+        }
+        else if (stmt instanceof BuildIn)
+        {
+            return evalBuildInStatement((BuildIn)stmt,env);
         }
         else
             return new NullInternel();
@@ -147,6 +152,8 @@ public class Eval {
                 error("multicall function!");
                 return new NullInternel();
             }
+
+            ((FunctionInternal)res).env = env;
 
             ObjectInternal ans = curry((FunctionInternal)res, args, local);
             args.add(0,saved);
@@ -224,6 +231,8 @@ public class Eval {
                     error("multicall function!");
                     return new NullInternel();
                 }
+
+                ((FunctionInternal)res).env = local;
 
                 ObjectInternal ans =  curry((FunctionInternal)res, stmt.arguments, local);
                 stmt.arguments.add(0, saved);
@@ -609,6 +618,39 @@ public class Eval {
         }
 
         return res;
+    }
+
+    private static ObjectInternal evalBuildInStatement(BuildIn stmt, Enviroment env)
+    {
+        if (stmt instanceof LenStatement)
+        {
+            LenStatement len = (LenStatement)stmt;
+
+            ObjectInternal o = Eval(len.lenObj, env);
+
+            ObjectInternal res = new NullInternel();
+
+            if (o instanceof IntegerInternal)
+                res = o;
+            else if (o instanceof FloatInternal)
+                res = o;
+            else if (o instanceof BooleanInternal)
+                res = o;
+            else if (o instanceof StringInternal)
+                res = new IntegerInternal(((StringInternal)o).content.length());
+            else if (o instanceof DictInternal)
+                res = new IntegerInternal(((DictInternal)o).dict.size());
+            else if (o instanceof FunctionInternal)
+                res = new IntegerInternal(((FunctionInternal)o).parameters.size());
+            else if (o instanceof ListInternal)
+                res = new IntegerInternal(((ListInternal)o).elements.size());
+            
+            return res;
+        }
+        else
+        {
+            return new NullInternel();
+        }
     }
 
 

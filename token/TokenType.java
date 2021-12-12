@@ -101,6 +101,10 @@ public class TokenType {
     // 函数调用
     public static final String CALLFUNC = "CALLFUNC";
 
+    // 内置函数
+
+    public static final String BUILDIN = "BUILDIN";
+
     static{
         types.put("=", ASSIGN);
         types.put("+", ADD);
@@ -132,6 +136,8 @@ public class TokenType {
         types.put("if", IF);
         types.put("else", ELSE);
         types.put("return", RETURN);
+
+        types.put("len", BUILDIN);
 
         twoOpr.add("!");
         twoOpr.add("|");

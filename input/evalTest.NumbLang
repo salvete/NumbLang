@@ -64,14 +64,15 @@ let tmp = a["c"];
 tmp["d"];
 
 let maxArr = fn(arr){}
+
+let a = fn(x){  let y=2; return fn(y){return fn(z){return x  + y * z;};};};
+
+
+a(2)(3)(4);
+
+a(2)(3)(4);
+
 */
-
-let a = fn(x){  let y=2; return fn(y){return fn(z){return x /*此时x=1*/ + y * z;};};};
-
-
-a(2)(3)(4);
-
-a(2)(3)(4);
 
 /*
 fn(x,y){return x + y;}(2,4);
@@ -80,9 +81,9 @@ let adderFactory = fn(x){ return fn(y){ return x + y;};};
 let addTwo = adderFactory(2);
 x;
 addTwo(3);
-*/
 
 
+// 高阶函数
 let exeTwice = fn(f, x){ return f(f(x));};
 let addTwo = fn(x) { return x + 2;};
 let mulThree = fn(x) { return x * 3;};
@@ -91,10 +92,58 @@ exeTwice(addTwo,3); // -> 7
 exeTwice;
 exeTwice(mulThree,12); // -> 108
 
+//闭包
+let newAdder = fn(x) { return fn(y) { x + y; }; };
+let addTwo = newAdder(2);
+x;
+addTwo(3);
+
+//柯里化
 let a = fn(f,x){return f(x);};
-
-let f = fn(x){ return fn(y){ return fn(z){return x + y + z;};};};
-
+let f = fn(x){ return fn(y){ return fn(z){return x + y * z;};};};
+//第一种方式
 a(f,2)(3)(8);
+//第二种方式
+a(f(3)(8),2);
 
+a(f(3),2)(8);
+*/
+
+/*
+//语义分析输入
+let newAdder = fn(x){
+    return fn(y){
+        return x + y;
+    };
+};
+
+let addTwo = newAdder(2);
+
+let list = [1,4/2,addTwo];
+let dict = {"name":"Tom", "age":25};
+
+let a = list[2];
+let b = dict["age"];
+a;
+a(b);
+*/
+
+let a = 10+2;
+let b = false;
+let c = fn(x,y){ return x + y;};
+let d = c(2,3);
+let e = 1.23;
+let f = [1,2,3,4,5];
+let g = "hello,world";
+let h = {"name":"Jack", "age":100};
+
+len(a);
+len(b);
+len(c);
+len(d);
+len(e);
+len(f);
+len(g);
+len(h);
+len(h["name"]);
 
