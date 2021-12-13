@@ -91,7 +91,3 @@ let b = if (3 > 4){
 };
 
 
-len(add);
-len(b);
-len(12+4);
-

@@ -102,8 +102,11 @@ public class TokenType {
     public static final String CALLFUNC = "CALLFUNC";
 
     // 内置函数
-
     public static final String BUILDIN = "BUILDIN";
+
+    // 退出
+
+    public static final String EXIT = "EXIT";
 
     static{
         types.put("=", ASSIGN);
@@ -139,6 +142,8 @@ public class TokenType {
 
         types.put("len", BUILDIN);
         types.put("type", BUILDIN);
+
+        types.put("exit", EXIT);
 
         twoOpr.add("!");
         twoOpr.add("|");

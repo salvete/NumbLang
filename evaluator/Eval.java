@@ -375,6 +375,8 @@ public class Eval {
             case TokenType.DIV: res = new IntegerInternal(lv / rv);break;
             case TokenType.EQU: res = new BooleanInternal(lv == rv);break;
             case TokenType.NEQU: res = new BooleanInternal(lv != rv);break;
+            case TokenType.GT: res = new BooleanInternal(lv > rv);break;
+            case TokenType.LT: res = new BooleanInternal(lv < rv);break;
             default:
                 error("Unknown: " +  lv + " " + opr + " " + rv);
                 res = new NullInternel();

@@ -85,11 +85,55 @@ public class Parser {
      */
 
     public Statement getNextStatement() {
-
-        if (lexer.isEnd())
+        // 从文件输入源码
+        if (lexer.sourceCode)
+        {
+            if (lexer.isEnd())
             return null;
-        else {
+            else {
+                Statement s = null;
+
+                if (checkType(curToken.type, TokenType.LET)) {
+                    s = parseLetStatement();
+
+                    /**
+                     * To check ';'
+                     */
+                    if (!checkSemicolon())
+                        s = null;
+
+                } else if (checkType(curToken.type, TokenType.RETURN)) {
+                    s = parseReturnStatement();
+
+                    if (!checkSemicolon())
+                        s = null;
+
+                } else if (checkType(curToken.type, TokenType.IF)) {
+                    s = parseIfStatement();
+                } else {
+                    s = parseExpressionStatement();
+
+                    if (!checkSemicolon())
+                        s = null;
+                }
+
+                return s;
+            }
+        }
+        else
+        {
             Statement s = null;
+            int cnt = 0;
+
+            while (checkType(curToken.type, TokenType.ILLEGAL))
+            {
+                nextToken();
+                
+                cnt ++;
+
+                if (cnt > 10 && checkType(curToken.type, TokenType.ILLEGAL))
+                    return s;   
+            }
 
             if (checkType(curToken.type, TokenType.LET)) {
                 s = parseLetStatement();
@@ -117,6 +161,7 @@ public class Parser {
 
             return s;
         }
+        
 
     }
 

@@ -27,7 +27,7 @@ public class ListInternal implements ObjectInternal {
         {
             if (i == 0)
             {
-                sb.append(" " + elements.get(i).Inspect() + " ");
+                sb.append(" " + elements.get(i).Inspect());
             }
             else
             {

@@ -128,6 +128,8 @@ a;
 a(b);
 */
 
+
+//内置函数测试
 let a = 10+2;
 let b = false;
 let c = fn(x,y){ return x + y;};
@@ -137,22 +139,40 @@ let f = [1,2,3,4,5];
 let g = "hello,world";
 let h = {"name":"Jack", "age":100};
 
-len(a);
-len(b);
-len(c);
-len(d);
-len(e);
-len(f);
-len(g);
-len(h);
-len(h["name"]);
+len(a); // -> 12         
+len(b); // -> false      
+len(c); // -> 2          
+len(d); // -> 5          
+len(e); // -> 1.23       
+len(f); // -> 5          
+len(g); // -> 11         
+len(h); // -> 2          
+len(h["name"]); // -> 4 
 
-type(a);
-type(b);
-type(c);
-type(d);
-type(e);
-type(f);
-type(g);
-type(h);
-type(h["name"]);
+type(a); // -> integer
+type(b); // -> boolean
+type(c); // -> function
+type(d); // -> integer
+type(e); // -> float
+type(f); // -> list
+type(g); // -> string
+type(h); // -> dict
+type(h["name"]); // -> string
+
+
+/*
+//语义分析输入
+let newAdder = fn(x){
+    return fn(y){
+        return x + y;
+    };
+};
+let addTwo = newAdder(2);
+let list = [1,4/2,addTwo];
+let dict = {"name":"Tom", "age":25};
+let a = list[2];
+let b = dict["age"];
+a;
+a(b);
+exit;
+*/

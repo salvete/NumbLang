@@ -2,12 +2,20 @@ package lexer;
 
 import java.util.Objects;
 
+
 import token.Token;
 import token.TokenType;
 
 public class Lexer {
     // 输入的源代码
     public String input;
+
+    // 动态加入的源码
+    public StringBuilder sb;
+
+    //
+    public boolean sourceCode = false;
+
     // 当前位置
     public int pos;
     // 下一个字符位置
@@ -19,6 +27,9 @@ public class Lexer {
     
     public Lexer(String in)
     {
+        // 是通过命令行加入代码的
+        sourceCode = true;
+
         input = in;
         ch = 0;
         pos = readPos = 0;
@@ -26,28 +37,73 @@ public class Lexer {
         readChar();
     }
 
-    public boolean isEnd()
+    public Lexer()
     {
-        return pos >= input.length();
+        sourceCode = false;
+
+        sb = new StringBuilder();
+
+        ch = 0;
+        pos = readPos = 0;
+        line = 1;
+        readChar();
+    }
+
+    public void addCode(String s)
+    {
+        sb.append(s);
+    }
+
+    public int getLineNo()
+    {
+        return line;
+    }
+
+    public boolean isEnd()
+    {   if (sourceCode)
+            return pos >= input.length();
+        else
+            return false;
     }
 
 
     public void readChar()
     {
-        if (readPos >= input.length())
+        // 通过文件输入
+        if (sourceCode)
         {
-            ch = 0;
+            if (readPos >= input.length())
+            {
+                ch = 0;
+            }
+            else 
+            {
+                ch = input.charAt(readPos);
+            }
+
+            if (ch == '\n')
+                line ++;
+
+            pos = readPos;
+            readPos += 1;
         }
-        else 
+        else
         {
-            ch = input.charAt(readPos);
-        }
 
-        if (ch == '\n')
-            line ++;
+            if (readPos >= sb.length())
+                ch = 0;
+            else
+            {
+                ch = sb.charAt(readPos);
+                pos = readPos;
+                readPos += 1;
+            }
 
-        pos = readPos;
-        readPos += 1;
+            if (ch == '\n')
+                line ++;
+            
+        
+        }   
     }
 
 
@@ -60,8 +116,8 @@ public class Lexer {
 
 
         // 已经结束
-        if (isEnd())
-            return new Token(TokenType.EOF, TokenType.EOF);
+        // if (isEnd())
+        //     return new Token(TokenType.EOF, TokenType.EOF);
 
         String chString = String.valueOf(ch);
 
@@ -158,8 +214,12 @@ public class Lexer {
     {
         int beginPos = pos;
         while (isLetter(ch))
-            readChar();
-        return input.substring(beginPos,pos);
+            readChar(); 
+        
+        if (sourceCode)
+            return input.substring(beginPos,pos);
+        else
+            return sb.substring(beginPos, pos);
     }
 
     private void skipWhiteSpace()
@@ -201,8 +261,11 @@ public class Lexer {
         }
         
         end = pos;
+        if (sourceCode)
+            ans[0] = input.substring(begin,end);
+        else
+            ans[0] = sb.substring(begin, end);
 
-        ans[0] = input.substring(begin,end);
         if (isInteger)
             ans[1] = TokenType.NUMBER;
         else
@@ -230,9 +293,12 @@ public class Lexer {
 
         end = pos;
 
-        ans[0] = input.substring(begin,end);
-        ans[1] = TokenType.STRING;
+        if (sourceCode)
+            ans[0] = input.substring(begin,end);
+        else
+            ans[0] = sb.substring(begin,end);
 
+        ans[1] = TokenType.STRING;
 
         // 把 " 读掉
         readChar();
@@ -242,10 +308,21 @@ public class Lexer {
 
     private char peekChar()
     {
-        if (readPos >= input.length())
-            return 0;
+        if (sourceCode)
+        {
+            if (readPos >= input.length())
+                return 0;
+            else
+                return input.charAt(readPos);
+        }
         else
-            return input.charAt(readPos);
+        {
+            if (readPos >= sb.length())
+                return 0;
+            else
+                return sb.charAt(readPos);
+        }
+        
     }
 
 

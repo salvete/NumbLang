@@ -1,22 +1,9 @@
 //测试词法输入
+//测试词法输入
 let a = 5.12;
-
 let b = fn(x){
   return x * x;
 };
-
-let c = 2 + 3 * 4;
-
-let d = b(10);
-
-let f = "Hello,world";
-
-let g = [1,2,4*5,true,false,3==2];
-
-let h = {"name":"Bob","age":25};
-
-len(a);
-
-type(a);
-
+let c = [1,2,4*5,true,false,3==2];
+let d = {"name":"Bob","age":25};
 
