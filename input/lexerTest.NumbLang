@@ -1,5 +1,5 @@
 //测试词法输入
-//测试词法输入
+
 let a = 5.12;
 let b = fn(x){
   return x * x;

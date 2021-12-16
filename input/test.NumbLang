@@ -1,0 +1,84 @@
+// let 使用示例
+let age = 1;
+let name = "Jack";
+let result = 10 * (20/2 + 5);
+
+// list 和 dict 使用示例
+let myArray = [1,2,3,4,5];
+let myDict = {"name":"Jack", "age":28};
+
+// list 和dict 值的获取
+myArray[0]; // -> 1
+myDict["name"]; // -> Jack
+
+
+// 函数的定义与使用
+let add = fn(a,b){ return a + b; };
+add(2,3); // -> 5
+
+// 高阶函数使用示例
+let exeTwice = fn(f, x){
+    return f(f(x));
+};
+let addTwo = fn(x) { return x + 2;};
+let mulThree = fn(x) { return x * 3;};
+
+exeTwice(addTwo,3); // -> 7
+exeTwice(mulThree,12); // -> 108
+
+// 闭包示例
+let newAdder = fn(x) {
+    return fn(y){ 2 * x + y; };
+};
+
+let addTwo = newAdder(2);
+addTwo(3); // -> 5
+x; // Error: x doesn't exit!
+
+// 高阶函数 柯里化
+let a = fn(f,x){return f(x);};
+let f = fn(x){
+    return fn(y){
+        return fn(z){
+            return x + y * z;
+        };
+    };
+};
+
+//第一种方式
+a(f,2)(3)(8); // -> 26
+//第二种方式
+a(f(3)(8),2); // -> 19
+
+
+// 内置函数使用示例
+let a = 10+2;
+let b = false;
+let c = fn(x,y){ return x + y;};
+let d = c(2,3);
+let e = 1.23;
+let f = [1,2,3,4,5];
+let g = "hello,world";
+let h = {"name":"Jack", "age":100};
+
+len(a); // -> 12
+len(b); // -> false
+len(c); // -> 2
+len(d); // -> 5
+len(e); // -> 1.23
+len(f); // -> 5
+len(g); // -> 11
+len(h); // -> 2
+len(h["name"]); // -> 4
+
+type(a); // -> integer
+type(b); // -> boolean
+type(c); // -> function
+type(d); // -> integer
+type(e); // -> float
+type(f); // -> list
+type(g); // -> string
+type(h); // -> dict
+type(h["name"]); // -> string
+
+;
