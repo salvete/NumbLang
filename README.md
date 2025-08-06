@@ -20,3 +20,11 @@
 ## NumbLang 的介绍
 
 有关NumbLang的详细介绍参见：[NumbLang的介绍](./NumbLang介绍.pdf)
+
+## 用法示例
+词法分析、语法分析、语义分析和高阶用法见下：
+
+[词法分析](./input/lexerTest.NumbLang)
+[语法分析](./input/parserTest.NumbLang)
+[语义分析](./input/evalTest.NumbLang)
+[高阶用法](./input/test.NumbLang)
