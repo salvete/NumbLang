@@ -17,6 +17,6 @@
 7. 运行代码 `java REPL/REPL -f ./input/parserTest.NumbLang` 可以实现语法分析器测试
 8. 也可以通过切换到根目录，运行 `sh run.sh` 运行全部代码
 
-## NumLang 的介绍
+## NumbLang 的介绍
 
-参看介绍PDF
+有关NumbLang的详细介绍参见：[NumbLang的介绍](./NumbLang介绍.pdf)
